@@ -1,6 +1,20 @@
 version: '3'
 
 services:
+  web_server:
+    build: .
+    depends_on:
+      - 'postgres'
+    volumes:
+      - ./:/usr/src/empty_project/
+    expose:
+      - ${DJANGO_PORT}
+    command: gunicorn movies.wsgi:application --bind ${DJANGO_HOST}:${DJANGO_PORT}
+    env_file:
+      - ./.env.web_server
+    networks:
+      - my_network
+
   postgres:
     build:
       context: .
@@ -8,25 +22,11 @@ services:
     volumes:
       - ./postgres_data/:/var/lib/postgresql/sql_data/
     env_file:
-      - ./.env
+      - ./.env.db
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    networks:
-      - my_network
-
-  web:
-    build: .
-    depends_on:
-      - 'postgres'
-    command: bash -c "sleep 20 && python app/02_movies_admin/manage.py migrate && python app/02_movies_admin/manage.py createsuperuser --noinput && python app/02_movies_admin/manage.py runserver ${DJANGO_HOST}:${DJANGO_PORT}"
-    volumes:
-      - ./:/usr/src/empty_project/
-    ports:
-      - ${DJANGO_PORT}:${DJANGO_PORT}
-    env_file:
-      - ./.env
     networks:
       - my_network
 
