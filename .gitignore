@@ -1,2 +1,3 @@
 .env.db
 .env.web_server
+01_docker_compose/empty_project/app/
