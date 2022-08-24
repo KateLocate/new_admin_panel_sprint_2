@@ -1,0 +1,8 @@
+__pycache__
+.idea
+.env
+.python-version
+*.csv
+*.txt
+*.sqlite3
+*.sqlite
