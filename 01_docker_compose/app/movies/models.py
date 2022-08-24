@@ -1,4 +1,4 @@
-"""Models structure for mymovies app."""
+"""Models structure for movies app."""
 
 import uuid
 
@@ -39,7 +39,7 @@ class Genre(UUIDMixin, TimeStampedMixin):
     description = models.TextField(_('description'), null=True, blank=True)
 
     class Meta:
-        """Meta information on :model:`mymovies.Genre`."""
+        """Meta information on :model:`movies.Genre`."""
 
         db_table = '"content"."genre"'
         verbose_name = _('Genre')
@@ -52,7 +52,7 @@ class Genre(UUIDMixin, TimeStampedMixin):
 
 class GenreFilmwork(UUIDMixin):
     """Stores a single filmwork genre entry,
-    related to :model:`mymovies.Filmwork` and :model:`mymovies.Genre`.
+    related to :model:`movies.Filmwork` and :model:`movies.Genre`.
     """
 
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
@@ -60,7 +60,7 @@ class GenreFilmwork(UUIDMixin):
     created = models.DateTimeField(_('created'), auto_now_add=True)
 
     class Meta:
-        """Meta information on :model:`mymovies.GenreFilmwork`."""
+        """Meta information on :model:`movies.GenreFilmwork`."""
 
         db_table = '"content"."genre_film_work"'
         verbose_name = _('Film Genre')
@@ -85,7 +85,7 @@ class Person(UUIDMixin, TimeStampedMixin):
     gender = models.TextField(_('gender'), choices=Gender.choices, null=True)
 
     class Meta:
-        """Meta information on :model:`mymovies.Person`."""
+        """Meta information on :model:`movies.Person`."""
 
         db_table = '"content"."person"'
         verbose_name = _('Person')
@@ -98,7 +98,7 @@ class Person(UUIDMixin, TimeStampedMixin):
 
 class PersonFilmwork(UUIDMixin):
     """Stores a single filmwork person entry,
-    related to :model:`mymovies.Filmwork` and :model:`mymovies.Person`.
+    related to :model:`movies.Filmwork` and :model:`movies.Person`.
     """
 
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
@@ -107,7 +107,7 @@ class PersonFilmwork(UUIDMixin):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        """Meta information on :model:`mymovies.PersonFilmwork`."""
+        """Meta information on :model:`movies.PersonFilmwork`."""
 
         db_table = '"content"."person_film_work"'
         verbose_name = _('Person From Film')
@@ -130,11 +130,11 @@ class PersonFilmwork(UUIDMixin):
 
 
 class Filmwork(UUIDMixin, TimeStampedMixin):
-    """Stores a single filmwork entry, related to :model:`mymovies.Genre`."""
+    """Stores a single filmwork entry, related to :model:`movies.Genre`."""
 
     title = models.TextField(_('title'))
     certificate = models.CharField(_('certificate'), max_length=512, blank=True)
-    file_path = models.FileField(_('file'), blank=True, null=True, upload_to='mymovies/')
+    file_path = models.FileField(_('file'), blank=True, null=True, upload_to='movies/')
     genres = models.ManyToManyField(Genre, through='GenreFilmwork')
     persons = models.ManyToManyField(Person, through='PersonFilmwork')
     description = models.TextField(_('description'), blank=True, null=True)
@@ -145,7 +145,7 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     type = models.CharField(_('type'), choices=FilmworkType.choices, max_length=15)
 
     class Meta:
-        """Meta information on :model:`mymovies.Filmwork`."""
+        """Meta information on :model:`movies.Filmwork`."""
 
         db_table = '"content"."film_work"'
         verbose_name = _('Film')

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mymovies', '0002_film_work_certificate_file_path'),
+        ('movies', '0002_film_work_certificate_file_path'),
     ]
 
     operations = [

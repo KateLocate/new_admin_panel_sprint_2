@@ -1,4 +1,4 @@
-"""Admin panel configuration for mymovies app."""
+"""Admin panel configuration for movies app."""
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _

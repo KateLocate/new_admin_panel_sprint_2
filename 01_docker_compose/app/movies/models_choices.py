@@ -1,4 +1,4 @@
-"""Model attributes choices for app mymovies."""
+"""Model attributes choices for app movies."""
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _

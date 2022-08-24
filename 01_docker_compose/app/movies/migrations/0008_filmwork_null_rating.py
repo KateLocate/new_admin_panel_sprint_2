@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mymovies', '0007_filmwork_null_description'),
+        ('movies', '0007_filmwork_null_description'),
     ]
 
     operations = [

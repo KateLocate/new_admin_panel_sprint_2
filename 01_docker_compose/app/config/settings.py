@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mymovies.apps.MoviesConfig',
+    'movies.apps.MoviesConfig',
     'debug_toolbar',
 ]
 
@@ -96,6 +96,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOCALE_PATHS = ['mymovies/locale']
+LOCALE_PATHS = ['movies/locale']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

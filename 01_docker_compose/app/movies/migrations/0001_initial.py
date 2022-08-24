@@ -67,8 +67,8 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('role', models.TextField(null=True, verbose_name='role')),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('film_work', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mymovies.filmwork')),
-                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mymovies.person')),
+                ('film_work', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.filmwork')),
+                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.person')),
             ],
             options={
                 'verbose_name': 'Person From Film',
@@ -81,8 +81,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='created')),
-                ('film_work', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mymovies.filmwork')),
-                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mymovies.genre')),
+                ('film_work', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.filmwork')),
+                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movies.genre')),
             ],
             options={
                 'verbose_name': 'Film Genre',
@@ -93,6 +93,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='filmwork',
             name='genres',
-            field=models.ManyToManyField(through='mymovies.GenreFilmwork', to='mymovies.Genre'),
+            field=models.ManyToManyField(through='movies.GenreFilmwork', to='movies.Genre'),
         ),
     ]
