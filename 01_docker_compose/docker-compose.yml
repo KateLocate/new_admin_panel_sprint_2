@@ -8,9 +8,8 @@ services:
       - ./:/usr/src/
     expose:
       - ${DJANGO_PORT}
-    command: gunicorn movies.wsgi:application --bind ${DJANGO_HOST}:${DJANGO_PORT}
     env_file:
-      - ./env_variables/server.env
+      - ./app/env_variables/server.env
     networks:
       - movies_network
 
@@ -21,7 +20,7 @@ services:
     volumes:
       - ./postgres_data/:/var/lib/postgresql/data/
     env_file:
-      - ./env_variables/db.env
+      - ./app/env_variables/db.env
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -36,9 +35,9 @@ services:
       - ./configs:/etc/nginx/conf.d:ro
       - ./data:/data/:ro
     depends_on:
-      - service
+      - server
     ports:
-      - "80:80"
+      - ${NGINX_PORT}:${NGINX_PORT}
     networks:
       - movies_network
 
