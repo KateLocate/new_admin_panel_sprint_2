@@ -1,7 +1,6 @@
 __pycache__
 .idea
-.env
+*.env
 .python-version
 *.csv
 *.sqlite3
-*.sqlite
