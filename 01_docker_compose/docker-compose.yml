@@ -1,9 +1,33 @@
 version: '3'
 services:
-  service:
+  server:
     build: ./app
+    depends_on:
+      - 'postgres'
+    volumes:
+      - ./:/usr/src/
     expose:
-      - "8000"
+      - ${DJANGO_PORT}
+    command: gunicorn movies.wsgi:application --bind ${DJANGO_HOST}:${DJANGO_PORT}
+    env_file:
+      - ./env_variables/server.env
+    networks:
+      - movies_network
+
+  postgres:
+    build:
+      context: ./app
+      dockerfile: ./postgres.Dockerfile
+    volumes:
+      - ./postgres_data/:/var/lib/postgresql/data/
+    env_file:
+      - ./env_variables/db.env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - movies_network
 
   nginx:
     image: nginx:latest
@@ -15,3 +39,11 @@ services:
       - service
     ports:
       - "80:80"
+    networks:
+      - movies_network
+
+networks:
+  movies_network:
+
+volumes:
+  postgres_data:
