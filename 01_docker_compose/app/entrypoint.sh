@@ -9,6 +9,7 @@ done
 # then create superuser from django settings
 
 python manage.py createsuperuser --noinput
+python manage.py collectstatic --no-input --clear
 
 # after that migrate the sqlite data to the postgres database
 
