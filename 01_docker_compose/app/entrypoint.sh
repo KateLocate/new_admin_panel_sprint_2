@@ -3,7 +3,7 @@
 # first apply all migrations
 
 while ! python manage.py migrate; do
-  sleep 5
+  sleep 1
 done
 
 # then create superuser from django settings
