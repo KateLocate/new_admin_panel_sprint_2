@@ -12,13 +12,15 @@ services:
       - ./app/env_variables/server.env
     networks:
       - movies_network
+    entrypoint:
+      - ./entrypoint.sh
 
   postgres:
     build:
       context: ./app
       dockerfile: ./postgres.Dockerfile
     volumes:
-      - ./postgres_data/:/var/lib/postgresql/data/
+      - ./db_data/:/var/lib/postgresql/db_data/
     env_file:
       - ./app/env_variables/db.env
     environment:
@@ -45,4 +47,4 @@ networks:
   movies_network:
 
 volumes:
-  postgres_data:
+  db_data:
