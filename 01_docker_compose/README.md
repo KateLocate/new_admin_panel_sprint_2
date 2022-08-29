@@ -1,13 +1,5 @@
 # Проектное задание: Docker-compose
 
-Приступим к улучшению сервиса в области DevOps. Настройте запуск всех компонентов системы — Django, Nginx и Postgresql — с использованием docker-compose.
-
-Для упрощения выполнения задания мы подготовили проект, где настроена работа связки Django + uWSGI + Nginx + Docker. Вы можете взять его за основу, но его придётся дополнительно доработать, чтобы подключить Postgres, а также устранить мелкие ошибки в конфигурировании Django: например, `debug = True` или отсутствие настроек чтения переменных окружения.
-
-Сама заготовка уже показывает админку с примером одного метода API. Однако статика не собирается, миграций нет, конфиги Nginx, uWSGI и Docker, возможно, придётся подправить.
-
-Если вы считаете, что всё нужно сделать по-другому, воспользуйтесь пустой заготовкой проекта и напишите его самостоятельно.
-
 **Требования к работе:**
 
 - Напишите dockerfile для Django.
@@ -15,10 +7,13 @@
 - Уберите версию Nginx из заголовков. Версии любого ПО лучше скрывать от посторонних глаз, чтобы вашу админку случайно не взломали. Найдите необходимую настройку в официальной документации и проверьте, что она работает корректно. Убедиться в этом можно с помощью «Инструментов разработчика» в браузере.
 - Отдавайте статические файлы Django через Nginx, чтобы не нагружать сервис дополнительными запросами. Перепишите `location` таким образом, чтобы запросы на `/admin` шли без поиска статического контента. То есть, минуя директиву `try_files $uri @backend;`.
 
-**Подсказки и советы:**
+# Notes on building a server #
 
-- Теории на платформе должно быть достаточно для понимания принципов конфигурирования. Если у вас появятся какие-то вопросы по параметрам, ищите ответы [в официальной документации](https://nginx.org/ru/).
-- Для выполнения задачи про `/admin` нужно посмотреть порядок поиска `location`.
-- Для работы со статикой нужно подумать, как залить данные в файловую систему контейнера с Nginx.
-- Для задания дана базовая структура, которой можно пользоваться.
-- При настройке docker-compose важно проверять пути до папок. Большинство проблем связанно именно с этим.
+- The project was created on Ubuntu 22.04.1 LTS.
+- Installed `uwsgi`, `docker-compose`, `nginx` are required.
+- Set the environment variables used in `docker-compose.yml` in the `01_docker_compose/.env` file (if you choose any other name, you need to run `docker-compose` with the directive `--env /the_path_to_the_file/file`). 
+- Fill in the `.env` files in the `env_variables` directory.
+- Move to the `01_docker_compose` directory.
+- Run `docker-compose up --build` in the terminal to build containers and launch the project.
+- The admin page is located at `http://any_of_your_allowed_hosts_from_env_file/admin/`
+- Use `Ctrl+C` to stop the server and `docker-compose down --volume` to stop containers and clear volumes.
