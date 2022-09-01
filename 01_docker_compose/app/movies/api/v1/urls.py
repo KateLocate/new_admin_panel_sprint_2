@@ -7,5 +7,5 @@ from . import views
 
 urlpatterns = [
     path('movies/', views.MoviesListApi.as_view()),
-    path('movies/<uuid:uuid>', views.SingleMovieApi.as_view()),
+    path('movies/<uuid:uuid>/', views.SingleMovieApi.as_view()),
 ]
