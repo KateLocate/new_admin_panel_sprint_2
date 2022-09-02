@@ -9,6 +9,8 @@ from ...models import Filmwork
 
 
 class MoviesApiMixin:
+    """Represents mixin class with methods for serializing information about movies."""
+
     model = Filmwork
     http_method_names = ['get']
 
@@ -33,7 +35,8 @@ class MoviesApiMixin:
         )
         return movies_with_aggregated_fields
 
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context):
+        """Method rendering json response"""
         return JsonResponse(context)
 
 
@@ -46,11 +49,10 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
         """Method returning dictionary with movies data"""
         movies = self.get_queryset()
         paginator, pg, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
-        # print(self.request.GET.values())
 
         page = pg
-
         page_number = self.request.GET.get('page', None)
+
         if page_number:
             if page_number.isdigit():
                 page = paginator.get_page(page_number)
