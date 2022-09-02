@@ -7,8 +7,8 @@ services:
     volumes:
       - ./:/usr/src/
       - staticfiles:/opt/app/staticfiles
-    expose:
-      - ${DJANGO_PORT}
+    ports:
+      - ${DJANGO_PORT}:${DJANGO_PORT}
     env_file:
       - ./app/env_variables/server.env
     networks:
