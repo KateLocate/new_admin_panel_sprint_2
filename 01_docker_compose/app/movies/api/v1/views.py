@@ -2,26 +2,24 @@
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
 from django.http import JsonResponse
+from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
 from ...models import Filmwork
 
 
-class MoviesListApi(BaseListView):
-    """Represents a view class for serializing information about movies."""
-
+class MoviesApiMixin:
     model = Filmwork
     http_method_names = ['get']
 
-    @staticmethod
-    def agg_movies_query(movies_query):
-        """Static method with aggregating logic for the Filmwork model"""
-        query_with_vals = movies_query.prefetch_related(
+    def get_queryset(self):
+        """Method for getting Filmwork objects and preparing it"""
+        movies_objects = self.model.objects.prefetch_related(
             'genres', 'personfilmwork',
         ).values(
             'id', 'title', 'description', 'creation_date', 'rating', 'type',
         )
-        query_with_aggregated_fields = query_with_vals.annotate(
+        movies_with_aggregated_fields = movies_objects.annotate(
             genres=ArrayAgg('genres__name', distinct=True),
             actors=ArrayAgg(
                 'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='actor'),
@@ -33,31 +31,47 @@ class MoviesListApi(BaseListView):
                 'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='director'),
             ),
         )
-        return query_with_aggregated_fields
-
-    def get_queryset(self):
-        """Method for getting database objects and preparing it"""
-        movies = self.model.objects.all()
-        movies_with_aggregated_fields = self.agg_movies_query(movies)
         return movies_with_aggregated_fields
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        """Method returning dictionary with movies data"""
-        context = {
-            'results': list(self.get_queryset()),
-        }
-        return context
-
     def render_to_response(self, context, **response_kwargs):
-        """Method formatting the response. Returns a response with data from the given context."""
         return JsonResponse(context)
 
 
-class SingleMovieApi(MoviesListApi):
+class MoviesListApi(MoviesApiMixin, BaseListView):
+    """Represents a view class for serializing information about movies."""
+
+    paginate_by = 50
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Method returning dictionary with movies data"""
+        movies = self.get_queryset()
+        paginator, pg, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
+        # print(self.request.GET.values())
+
+        page = pg
+
+        page_number = self.request.GET.get('page', None)
+        if page_number:
+            if page_number.isdigit():
+                page = paginator.get_page(page_number)
+            elif page_number == 'last':
+                page = paginator.get_page(paginator.num_pages)
+
+        context = {
+            'count': paginator.count,
+            'total_pages': paginator.num_pages,
+            'prev': page.previous_page_number() if page.has_previous() else None,
+            'next': page.next_page_number() if page.has_next() else None,
+            'results': list(page.object_list),
+        }
+        return context
+
+
+class MoviesDetailApi(MoviesApiMixin, BaseDetailView):
     """Represents a view class for serializing information about a movie."""
 
-    def get_queryset(self):
-        """Method for getting database objects and preparing it"""
-        movie = self.model.objects.filter(id=self.kwargs['uuid'])
-        movie_with_aggregated_fields = self.agg_movies_query(movie)
-        return movie_with_aggregated_fields
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Method returning dictionary with movie data"""
+        movie = self.get_queryset()
+        context = movie.first()
+        return context
