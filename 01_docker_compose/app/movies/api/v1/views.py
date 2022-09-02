@@ -72,6 +72,4 @@ class MoviesDetailApi(MoviesApiMixin, BaseDetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Method returning dictionary with movie data"""
-        movie = self.get_queryset()
-        context = movie.first()
-        return context
+        return self.object
