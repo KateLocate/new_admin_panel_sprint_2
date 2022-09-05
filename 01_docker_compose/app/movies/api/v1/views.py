@@ -59,16 +59,7 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Method returning dictionary with movies data"""
         movies = self.get_queryset()
-        paginator, pg, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
-
-        page = pg
-        page_number = self.request.GET.get('page', None)
-
-        if page_number:
-            if page_number.isdigit():
-                page = paginator.get_page(page_number)
-            elif page_number == 'last':
-                page = paginator.get_page(paginator.num_pages)
+        paginator, page, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
 
         context = {
             'count': paginator.count,
