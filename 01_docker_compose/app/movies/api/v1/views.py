@@ -83,6 +83,6 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
 class MoviesDetailApi(MoviesApiMixin, BaseDetailView):
     """Represents a view class for serializing information about a movie."""
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         """Method returning dictionary with movie data"""
         return self.object
