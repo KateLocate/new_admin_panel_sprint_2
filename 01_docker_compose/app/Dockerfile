@@ -23,8 +23,4 @@ RUN  mkdir -p /var/www/media/ \
 
 COPY . .
 
-RUN chmod +x ./entrypoint.sh
-
-EXPOSE 8000
-
 ENTRYPOINT ["uwsgi", "--strict", "--ini", "uwsgi.ini"]
