@@ -8,11 +8,28 @@ from django.views.generic.list import BaseListView
 from ...models import Filmwork
 
 
+class PersonRole:
+    """Class describing the roles of people in the creation of the film"""
+
+    ACTOR = 'actor'
+    WRITER = 'writer'
+    DIRECTOR = 'director'
+
+
 class MoviesApiMixin:
     """Represents mixin class with methods for serializing information about movies."""
 
     model = Filmwork
     http_method_names = ['get']
+
+    @staticmethod
+    def _aggregate_persons(role):
+        """Static method containing query to get a list of people with the same roles."""
+        return ArrayAgg(
+            'personfilmwork__person__full_name',
+            distinct=True,
+            filter=Q(personfilmwork__role=role),
+        )
 
     def get_queryset(self):
         """Method for getting Filmwork objects and preparing it"""
@@ -23,15 +40,9 @@ class MoviesApiMixin:
         )
         movies_with_aggregated_fields = movies_objects.annotate(
             genres=ArrayAgg('genres__name', distinct=True),
-            actors=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='actor'),
-            ),
-            writers=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='writer'),
-            ),
-            directors=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='director'),
-            ),
+            actors=MoviesApiMixin._aggregate_persons(PersonRole.ACTOR),
+            writers=MoviesApiMixin._aggregate_persons(PersonRole.WRITER),
+            directors=MoviesApiMixin._aggregate_persons(PersonRole.DIRECTOR),
         )
         return movies_with_aggregated_fields
 
