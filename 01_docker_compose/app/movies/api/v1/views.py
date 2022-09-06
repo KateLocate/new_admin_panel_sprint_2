@@ -8,11 +8,28 @@ from django.views.generic.list import BaseListView
 from ...models import Filmwork
 
 
+class PersonRole:
+    """Class describing the roles of people in the creation of the film"""
+
+    ACTOR = 'actor'
+    WRITER = 'writer'
+    DIRECTOR = 'director'
+
+
 class MoviesApiMixin:
     """Represents mixin class with methods for serializing information about movies."""
 
     model = Filmwork
     http_method_names = ['get']
+
+    @staticmethod
+    def _aggregate_persons(role):
+        """Static method containing query to get a list of people with the same roles."""
+        return ArrayAgg(
+            'personfilmwork__person__full_name',
+            distinct=True,
+            filter=Q(personfilmwork__role=role),
+        )
 
     def get_queryset(self):
         """Method for getting Filmwork objects and preparing it"""
@@ -23,15 +40,9 @@ class MoviesApiMixin:
         )
         movies_with_aggregated_fields = movies_objects.annotate(
             genres=ArrayAgg('genres__name', distinct=True),
-            actors=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='actor'),
-            ),
-            writers=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='writer'),
-            ),
-            directors=ArrayAgg(
-                'personfilmwork__person__full_name', distinct=True, filter=Q(personfilmwork__role='director'),
-            ),
+            actors=MoviesApiMixin._aggregate_persons(PersonRole.ACTOR),
+            writers=MoviesApiMixin._aggregate_persons(PersonRole.WRITER),
+            directors=MoviesApiMixin._aggregate_persons(PersonRole.DIRECTOR),
         )
         return movies_with_aggregated_fields
 
@@ -48,16 +59,7 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Method returning dictionary with movies data"""
         movies = self.get_queryset()
-        paginator, pg, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
-
-        page = pg
-        page_number = self.request.GET.get('page', None)
-
-        if page_number:
-            if page_number.isdigit():
-                page = paginator.get_page(page_number)
-            elif page_number == 'last':
-                page = paginator.get_page(paginator.num_pages)
+        paginator, page, objs, is_paginated = self.paginate_queryset(movies, self.paginate_by)
 
         context = {
             'count': paginator.count,
@@ -72,6 +74,6 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
 class MoviesDetailApi(MoviesApiMixin, BaseDetailView):
     """Represents a view class for serializing information about a movie."""
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         """Method returning dictionary with movie data"""
         return self.object

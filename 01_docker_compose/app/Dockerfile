@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10.6-slim-buster
 
 WORKDIR /opt/app
 
@@ -13,17 +13,14 @@ COPY run_uwsgi.sh run_uwsgi.sh
 COPY requirements.txt requirements.txt
 COPY uwsgi/uwsgi.ini uwsgi.ini
 
-RUN  mkdir -p /var/www/static/ \
-     && mkdir -p /var/www/media/ \
+RUN  apt-get update \
+     && apt-get -y install gcc
+
+RUN  mkdir -p /var/www/media/ \
      && mkdir -p /opt/app/static/ \
-     && mkdir -p /opt/app/media/ \
      && pip install --upgrade pip \
-     && pip install -r requirements.txt
+     && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-RUN chmod +x ./entrypoint.sh
-
-EXPOSE 8000
 
 ENTRYPOINT ["uwsgi", "--strict", "--ini", "uwsgi.ini"]
